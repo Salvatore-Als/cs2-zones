@@ -7,6 +7,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 using CS2TraceRay.Class;
 using CS2TraceRay.Enum;
 using CS2TraceRay.Struct;
+using CS2Zones;
 
 public static class Player
 {
@@ -68,7 +69,7 @@ public static class Player
 
         Vector eyePosition = new Vector(absOrigin.X, absOrigin.Y, absOrigin.Z + player.PlayerPawn.Value.ViewOffset.Z);
 
-        CGameTrace? trace = player.GetGameTraceByEyePosition(TraceMask.MaskAll, Contents.NoDraw, player);
+        CGameTrace? trace = player.GetGameTraceByEyePosition(TraceMask.MaskShot, Contents.NoDraw, player);
         if(trace == null)
             return null;
 
@@ -79,5 +80,17 @@ public static class Player
             return null;
 
         return endPos;
+    }
+
+    public static bool IsValidEditor(this CCSPlayerController? player)
+    {
+        if(player == null || !player.IsValid() || !player.IsAlive()) 
+            return false;
+
+        if(!CS2Zones.PlayerZoneManager.PlayerZoneManagers.ContainsKey(player))
+            return false;
+
+        CS2Zones.PlayerZoneManager playerZoneManager = CS2Zones.PlayerZoneManager.PlayerZoneManagers[player];
+        return playerZoneManager.IsEditingZone();
     }
 }

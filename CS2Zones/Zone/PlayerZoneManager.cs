@@ -32,7 +32,7 @@ namespace CS2Zones
                 return;
         
             EditingZone.SetupCorners(eyeVector);
-            //_player.PrintToCenter(EditingZone.GetInformation(_zoneSnapshot));
+            _player.PrintToCenter(EditingZone.GetInformation(_zoneSnapshot));
         }
 
         public void StartNewZone()
@@ -41,7 +41,7 @@ namespace CS2Zones
 
             EditingZone = new Zone();
             EditingZone.Drawn = true;
-            EditingZone.Name = "Untitled Zone";
+            EditingZone.Name = EditingZone.Id.ToString();
             EditingZone.Color = Color.Red;
             ZoneManager.AddZone(EditingZone);
             _zoneSnapshot = null; 
@@ -70,25 +70,18 @@ namespace CS2Zones
             if(saveStatus != ZoneSaveStatus.PossibleToSave) {
                 switch(saveStatus) {
                     case ZoneSaveStatus.NameNotValid:
-                        _player?.PrintToChat("i18n Le nom de la zone n'est pas valide");
-                        break;
+                        throw new Exception("The zone name is not valid");
                     case ZoneSaveStatus.NameAlreadyExists:
-                        _player?.PrintToChat("i18n Le nom de la zone existe déjà");
-                        break;
+                        throw new Exception("The zone name already exists");
                     case ZoneSaveStatus.CornersNotFreezed:
-                        _player?.PrintToChat("i18n Les coins de la zone ne sont pas fixés");
-                        break;
+                        throw new Exception("The corners of the zone are not frozen");
                     default:
-                        _player?.PrintToChat("i18n La zone n'est pas sauvegardable");
-                        break;
+                        throw new Exception("The zone is not savable");
                 }
-                return;
             }
         
             EditingZone.Save();
             EditingZone.Drawn = false;
-            
-            ZoneConfigManager.SaveZonesForMap(CS2Zones.MapName);
             
             EditingZone = null;
             _zoneSnapshot = null; 

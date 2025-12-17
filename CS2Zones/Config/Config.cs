@@ -3,7 +3,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 
 namespace CS2Zones
 {
-    public class ZoneConfig
+    public class Config
     {
         public string Id { get; set; } = "";
         public string Name { get; set; } = "";
@@ -17,9 +17,9 @@ namespace CS2Zones
         public float EndCornerY { get; set; }
         public float EndCornerZ { get; set; }
 
-        public static ZoneConfig FromZone(Zone zone)
+        public static Config FromZone(Zone zone)
         {
-            return new ZoneConfig
+            return new Config
             {
                 Id = zone.Id.ToString(),
                 Name = zone.Name,
@@ -47,10 +47,10 @@ namespace CS2Zones
         }
     }
 
-    public class MapZoneConfig
+    public class MapConfig
     {
         public string MapName { get; set; } = "";
-        public List<ZoneConfig> Zones { get; set; } = new List<ZoneConfig>();
+        public List<Config> Zones { get; set; } = new List<Config>();
     }
 }
 

@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace CS2Zones
 {
@@ -15,12 +16,30 @@ namespace CS2Zones
 
             if (CS2Zones.globalCtx == null)
                 return false;
-
-            Zone zone = ZoneManager.GetZoneByName(zoneName);
+            
+            Zone? zone = ZoneManager.GetZoneByName(zoneName);
             if (zone == null)
                 return false;
 
             return zone.PlayersInZone.Contains(player);
+        }
+
+        public void TeleportPlayerInZone(CCSPlayerController player, string zoneName)
+        {
+            if (player == null || !player.IsValid() || !player.IsAlive()) 
+                return;
+
+            var pawn = player.Pawn();
+            if(pawn == null)
+                return;
+
+            Zone? zone = ZoneManager.GetZoneByName(zoneName);
+            if (zone == null)
+                return;
+    
+            QAngle eyeAngle = pawn.EyeAngles;
+            Vector middle = zone.GetMiddle();
+            pawn.Teleport(middle, eyeAngle, new Vector(0, 0, 0));
         }
 
         internal void TriggerPlayerEnterZone(CCSPlayerController player, string zoneName)

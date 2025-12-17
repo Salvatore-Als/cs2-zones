@@ -20,7 +20,7 @@ namespace CS2Zones
                     return HookResult.Continue;
 
                 FreezeCorner(player);
-                return HookResult.Continue; // Handle when supported by cs#
+                return HookResult.Continue; // TODO HookResult.Handle when supported by cs#
             }
             catch (NullReferenceException)
             {
@@ -28,38 +28,61 @@ namespace CS2Zones
             }
         }
 
-        // TODO : on player ping pour reset les corners
+        public HookResult OnPlayerPing(EventPlayerPing @event, GameEventInfo info)
+        {
+            try
+            {
+                CCSPlayerController? player = @event.Userid;
+                if(player == null || !player.IsValid())
+                    return HookResult.Continue;
+
+                if(!PlayerZoneManager.PlayerZoneManagers.ContainsKey(player))
+                    return HookResult.Continue;
+
+                ResetCorners(player);
+                return HookResult.Continue;
+            }
+            catch (NullReferenceException)
+            {
+                return HookResult.Continue;
+            }
+        }
+    
+        private void ResetCorners(CCSPlayerController? player)
+        {
+            if(player == null)
+                return;
+
+            if (!player.IsValidEditor())
+                return;
+
+            if (!PlayerZoneManager.PlayerZoneManagers.TryGetValue(player, out var playerZoneManager))
+                return;
+
+            if(playerZoneManager.EditingZone == null)
+                return;
+            
+            playerZoneManager.EditingZone.ResetCorners();
+            player.PrintToChat($"{PREFIX} Zone position reset !");
+        }
 
         private void FreezeCorner(CCSPlayerController? player)
         {
-            if(player == null || !player.IsValid())
+            if (player == null || !player.IsValidEditor())
                 return;
 
-            if(!PlayerZoneManager.PlayerZoneManagers.ContainsKey(player))
-            {
-                player.PrintToChat("i18n Aucune zone en cours d'édition");
+            if (!PlayerZoneManager.PlayerZoneManagers.TryGetValue(player, out var playerZoneManager))
                 return;
-            }
-
-            PlayerZoneManager playerZoneManager = PlayerZoneManager.PlayerZoneManagers[player];
-            if(!playerZoneManager.IsEditingZone()) 
-            {
-                player.PrintToChat("i18n Vous n'avez pas de zone en cours de création");
-                return;
-            }
 
             if(playerZoneManager.EditingZone == null)
                 return;
 
             playerZoneManager.EditingZone.Freeze();
             
-            // Afficher un message selon le corner sauvegardé
             if(!playerZoneManager.EditingZone.IsStartCornerFreezed())
-                player.PrintToChat("i18n Corner START sauvegardé ! Déplacez votre viseur pour définir le corner END");
+                player.PrintToChat($"{PREFIX} Corner START saved ! Move your crosshair to define the END corner");
             else if(!playerZoneManager.EditingZone.IsEndCornerFreezed())
-                player.PrintToChat("i18n Corner END sauvegardé ! La zone est complète");
-            else
-                player.PrintToChat("i18n Les deux corners sont déjà sauvegardés");
+                player.PrintToChat($"{PREFIX} Corner END saved !");
         }
     }
 }

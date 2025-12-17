@@ -2,6 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Capabilities;
+using CounterStrikeSharp.API.Modules.Utils;
 using MenuManager;
 
 namespace CS2Zones
@@ -9,13 +10,14 @@ namespace CS2Zones
     [MinimumApiVersion(244)]
     public partial class CS2Zones : BasePlugin
     {
+        public static string PREFIX = $" {ChatColors.Green}[CS2Zones]: {ChatColors.White}";
+    
         public override string ModuleName => "CS2Zones";
         public override string ModuleVersion => "v1.0.0";
         public override string ModuleAuthor => "Kriax";
 
         public static PluginCapability<ICS2ZonesAPI> zonesApiCapability { get; } = new("cs2zones:api");
         public static CS2Zones? globalCtx;
-        public static string MapName { get; set; } = "";
 
         private IMenuApi? _menuApi;
         private readonly PluginCapability<IMenuApi?> _menuApiCapability = new("menu:nfcore");
@@ -26,7 +28,10 @@ namespace CS2Zones
         public override void Load(bool hotReload)
         {
             globalCtx = this;
-            
+        
+            if(apiInstance == null)
+                apiInstance = new CS2ZonesAPI();
+
             Capabilities.RegisterPluginCapability(zonesApiCapability, () => apiInstance);
         
             Console.WriteLine(@"
@@ -71,7 +76,13 @@ namespace CS2Zones
             if(_menuApi == null)
             {
                 Console.WriteLine($"{this.ModuleName} - Error: Unable to retrieve MenuManager API");
-                return;
+            }
+
+            if(hotReload)
+            {
+                AddTimer(0.1f, () => {
+                    LoadZones();
+                });
             }
         }
 
@@ -90,6 +101,7 @@ namespace CS2Zones
             });*/
             
             RegisterEventHandler<EventWeaponFire>(OnWeaponFire, HookMode.Pre);
+            RegisterEventHandler<EventPlayerPing>(OnPlayerPing, HookMode.Pre);
         }
 
         private void RegisterListeners()
@@ -100,35 +112,42 @@ namespace CS2Zones
 
         private void OnMapStart(string mapName)
         {
-            MapName = mapName;
-            LoadZonesForCurrentMap();
+            LoadZones();
         }
 
-        private void LoadZonesForCurrentMap()
+        private void LoadZones()
         {
-            ZoneManager.ClearZones();
+            string mapName = Server.MapName;
+            if (string.IsNullOrEmpty(mapName))
+            {
+                Console.WriteLine("[CS2Zones] Warning: Server.MapName is not available yet, zones will be loaded on map start");
+                return;
+            }
 
-            List<Zone> zones = ZoneConfigManager.LoadZonesForMap(MapName);
+            ConfigManager.LoadConfig(mapName);
+        
+            foreach (var zone in ZoneManager.Zones.ToList())
+                zone.Drawn = false; // security
+
+            ZoneManager.ClearZones(); // security
+
+            List<Zone> zones = ConfigManager.LoadZones();
             
             foreach (var zone in zones)
+            {
+                zone.Drawn = false; // security
                 ZoneManager.AddZone(zone);
+            }
 
-            Console.WriteLine($"[CS2Zones] {zones.Count} zones loaded for map: {MapName}");
+            Console.WriteLine($"[CS2Zones] Loaded {zones.Count} zones for map: {mapName}");
         }
 
         public void RegisterCommands()
         {
-            AddCommand("css_zones_add", "Créer une nouvelle zone", OnNewZonesCommand);
-            AddCommand("css_zones_save", "Sauvegarder la zone en cours d'édition", OnSaveCommand);
-            AddCommand("css_zones_name", "Renommer la zone", OnSetNameCommand);
-            AddCommand("css_zones_edit", "Mettre une zone en mode édition", OnEditCommand);
-            AddCommand("css_zones_abort", "Annuler l'édition en cours", OnZoneAbortCommand);
-
-            AddCommand("css_zadd", "Créer une nouvelle zone", OnNewZonesCommand);
-            AddCommand("css_zsave", "Sauvegarder la zone en cours d'édition", OnSaveCommand);
-            AddCommand("css_zname", "Renommer la zone", OnSetNameCommand);
-            AddCommand("css_zedit", "Mettre une zone en mode édition", OnEditCommand);
-            AddCommand("css_zabort", "Annuler l'édition en cours", OnZoneAbortCommand);
+            AddCommand("css_zones", "Open the zones management menu", OnZonesMenuCommand);
+            AddCommand("css_zsave", "Save the current zone", OnSaveCommand);
+            AddCommand("css_zname", "Rename the zone", OnSetNameCommand);
+            AddCommand("css_zabort", "Cancel the current edit", OnZoneAbortCommand);
         }
     }
 }

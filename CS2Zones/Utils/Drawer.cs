@@ -11,8 +11,8 @@ public static class Drawer
 {
     public static void DrawPoint(Vector point, Color color)
     {
-        float radius = 5.0f; // Circle radius in units
-        int segments = 8;
+        float radius = 1.0f; // Circle radius in units
+        int segments = 1;
         float step = (float)(2.0 * Math.PI) / segments;
 
         for (int i = 0; i < segments; i++)
@@ -45,7 +45,7 @@ public static class Drawer
             return;
 
         beam.Render = color;
-        beam.Width = 1.5f;
+        beam.Width = 0.5f;
         beam.Teleport(start, new QAngle(0, 0, 0), new Vector(0, 0, 0));
 
         beam.EndPos.X = end.X;
@@ -59,7 +59,7 @@ public static class Drawer
             try 
             {
                 Guard.IsValidEntity(beam); // Safe, otherwise we will lag the server :(
-            } catch(Exception e)
+            } catch
             {
                 return;
             }

@@ -72,14 +72,15 @@ namespace CS2Zones
             // Boucle unique pour détecter les entrées/sorties de la zone
             foreach (var player in players)
             {
-                Vector absOrigin = player.PlayerPawn.Value?.AbsOrigin;
+                if(player == null)
+                    continue;
+
+                Vector? absOrigin = player.PlayerPawn.Value?.AbsOrigin;
                 if (absOrigin == null)
                     continue;
 
                 bool inZone = VectorIsInZone(absOrigin);
                 bool wasInZone = PlayersInZone.Contains(player);
-
-                player.PrintToCenter($"in zone : {inZone} was in zone : {wasInZone}");
 
                 if (inZone && !wasInZone)
                 {
@@ -96,10 +97,17 @@ namespace CS2Zones
 
         public Vector GetMiddle()
         {
+            float minX = Math.Min(StartCorner.X, EndCorner.X);
+            float maxX = Math.Max(StartCorner.X, EndCorner.X);
+            float minY = Math.Min(StartCorner.Y, EndCorner.Y);
+            float maxY = Math.Max(StartCorner.Y, EndCorner.Y);
+            float minZ = Math.Min(StartCorner.Z, EndCorner.Z);
+            float maxZ = Math.Max(StartCorner.Z, EndCorner.Z);
+
             return new Vector(
-                (StartCorner.X + EndCorner.X) / 2.0f,
-                (StartCorner.Y + EndCorner.Y) / 2.0f,
-                (StartCorner.Z + EndCorner.Z) / 2.0f
+                minX + (maxX - minX) / 2.0f,
+                minY + (maxY - minY) / 2.0f,
+                minZ + (maxZ - minZ) / 2.0f
             );
         }
         
@@ -144,17 +152,14 @@ namespace CS2Zones
 
         public void Save()
         {
-            // La sauvegarde est gérée par ZoneConfigManager dans CS2Zones.cs
+            ConfigManager.Save();
         }
 
         public void Delete()
         {
-            // Supprimer de la config
-            string mapName = Server.MapName;
-            ZoneConfigManager.DeleteZoneFromMap(Id, mapName);
-            
-            // Supprimer du ZoneManager
+            Drawn = false; 
             ZoneManager.RemoveZone(this);
+            ConfigManager.Save();
         }
 
         public ZoneSaveStatus GetSaveStatus()
@@ -162,7 +167,7 @@ namespace CS2Zones
             if(!_startCornerFreezed || !_endCornerFreezed)
                 return ZoneSaveStatus.CornersNotFreezed;
 
-            if(string.IsNullOrWhiteSpace(Name) || Name == "Untitled Zone")
+            if(string.IsNullOrWhiteSpace(Name))
                 return ZoneSaveStatus.NameNotValid;
 
             Zone? existingZone = ZoneManager.GetZoneByName(Name);
@@ -184,39 +189,42 @@ namespace CS2Zones
 
         public string GetInformation(ZoneSnapshot? originalSnapshot = null)
         {
+            string header = $"Editing zone {Name}";
+            string statusText = "";
+
             ZoneSaveStatus saveStatus = GetSaveStatus();
-            string saveStatusText = "";
-            switch(saveStatus) {
+
+            if (originalSnapshot != null) // Editing existing zone
+            {
+                bool isModified = IsModifiedFromSnapshot(originalSnapshot);
+                
+                if (isModified)
+                    statusText = GetSaveStatusMessage(saveStatus);
+                else
+                    statusText = "No modification has been made";
+            }
+            // New zones
+            else
+                statusText = GetSaveStatusMessage(saveStatus);
+
+            return $"{header}\n- {statusText}";
+        }
+
+        private string GetSaveStatusMessage(ZoneSaveStatus status)
+        {
+            switch (status)
+            {
                 case ZoneSaveStatus.PossibleToSave:
-                    saveStatusText = "i18n Possible de sauvegarder !";
-                    break;
+                    return "⚠️ Don't forget to save !";
                 case ZoneSaveStatus.NameNotValid:
-                    saveStatusText = "i18n Nom non valide !";
-                    break;
+                    return "⚠️ Invalid name !";
                 case ZoneSaveStatus.NameAlreadyExists:
-                    saveStatusText = "i18n Nom déjà existant !";
-                    break;
+                    return "⚠️ Name already exists !";
                 case ZoneSaveStatus.CornersNotFreezed:
-                    saveStatusText = "i18n Coins non fixés !";
-                    break;
+                    return "⚠️ Corners not frozen !";
                 default:
-                    saveStatusText = "i18n Inconnu !";
-                    break;
+                    return "⚠️ Unknown !";
             }
-
-            string modifiedText = "";
-            if(originalSnapshot != null && IsModifiedFromSnapshot(originalSnapshot))
-            {
-                modifiedText = "\n - ⚠️ Zone modifiée ! N'oubliez pas de sauvegarder !";
-            }
-
-            if(originalSnapshot == null)
-            {
-                modifiedText = "\n - ⚠️ Nouvelle zone ! N'oubliez pas de sauvegarder !";
-            }
-
-            string information = $"i18n Zone: {Name} \n - Statut: {saveStatusText}{modifiedText}";
-            return information;
         }
 
         public ZoneSnapshot CreateSnapshot()
@@ -308,8 +316,8 @@ namespace CS2Zones
     {
         public string Name { get; set; } = "";
         public Color Color { get; set; }
-        public Vector StartCorner { get; set; }
-        public Vector EndCorner { get; set; }
+        public Vector StartCorner { get; set; } = new Vector(0, 0, 0);
+        public Vector EndCorner { get; set; } = new Vector(0, 0, 0);
         public bool StartCornerFreezed { get; set; }
         public bool EndCornerFreezed { get; set; }
     }

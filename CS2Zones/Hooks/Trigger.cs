@@ -18,6 +18,8 @@ namespace CS2Zones
                 var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value!.Handle);
                 string triggerName = caller.Entity.Name;
 
+                // xxx
+
                 return HookResult.Continue;
             }
             catch (NullReferenceException)
@@ -35,8 +37,8 @@ namespace CS2Zones
 
                 var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value!.Handle);
                 string triggerName = caller.Entity.Name;
-                // TODO : call la fonction api on leave zone
-                Server.PrintToChatAll($"Player {player.PlayerName} left zone {triggerName}");
+
+                // xxx
 
                 return HookResult.Continue;
             }
@@ -67,10 +69,7 @@ namespace CS2Zones
             if(!_triggerHandles.Contains(callerHandle))
                 return false;
 
-            // TODO : BOUGER LE VALID TRIGGER NAME DANS UNE FONCTION, la on check si ça commence par cs2zones_
-            string triggerName = caller.Entity.Name;
-            if(!triggerName.StartsWith("cs2zones_"))
-                return false;
+            // xxx valide trigger name with prefix cs2zones_
 
             return true;
         }*/
