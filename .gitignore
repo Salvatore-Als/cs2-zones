@@ -8,6 +8,7 @@ Release/
 **/Debug/
 **/Release/
 
+release/
 build/
 */build/
 deploy.sh
