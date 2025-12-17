@@ -2,6 +2,10 @@
 
 A Counter-Strike 2 plugin for creating and managing zones on maps. This plugin allows you to define zones, detect when players enter/leave them, and provides an API for other plugins to interact with zones.
 
+## 📹 Video Presentation
+
+[![CS2Zones Presentation](https://img.youtube.com/vi/dHfA977DKQc/0.jpg)](https://youtu.be/dHfA977DKQc)
+
 ## Sponsor
 
 [![VeryGames](https://www.verygames.com/fr/assets/images/verygames.webp)](https://verygames.com/en?af=cs2zones)
