@@ -22,4 +22,11 @@ public interface ICS2ZonesAPI
     /// Event triggered when a player leaves a zone
     /// </summary>
     event Action<CCSPlayerController, string>? OnPlayerLeaveZone;
+
+    /// <summary>
+    /// Teleport player in the middle of a zone
+    /// </summary>
+    /// <param name="player">The player to teleport</param>
+    /// <param name="zoneName">The name of the zone</param>
+    void TeleportPlayerInZone(CCSPlayerController player, string zoneName);
 }
