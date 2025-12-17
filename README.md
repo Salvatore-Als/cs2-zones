@@ -2,6 +2,12 @@
 
 A Counter-Strike 2 plugin for creating and managing zones on maps. This plugin allows you to define zones, detect when players enter/leave them, and provides an API for other plugins to interact with zones.
 
+## Sponsor
+
+[![VeryGames](https://www.verygames.com/fr/assets/images/verygames.webp)](https://verygames.com/en?af=cs2zones)
+
+Thanks for the free Server 💋
+
 ## Features
 
 - Create and manage zones on maps
@@ -184,7 +190,3 @@ csgo/addons/counterstrikesharp/configs/plugins/CS2Zones/zones_{mapname}.json
 ## Contributing
 
 Contributions are welcome! If you'd like to contribute, feel free to open a Pull Request with your improvements. :)
-
-## Sponsor
-
-[![VeryGames](https://verygames.com/banner.png)](https://verygames.com/en?af=cs2zones)
