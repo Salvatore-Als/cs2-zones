@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 
 /// <summary>
 /// API to manage zones in Counter-Strike 2
@@ -29,4 +30,18 @@ public interface ICS2ZonesAPI
     /// <param name="player">The player to teleport</param>
     /// <param name="zoneName">The name of the zone</param>
     void TeleportPlayerInZone(CCSPlayerController player, string zoneName);
+
+    /// <summary>
+    /// Get the middle position of a zone
+    /// </summary>
+    /// <param name="zoneName">The name of the zone</param>
+    /// <returns>The middle position of the zone</returns>
+    Vector GetZoneMiddlePosition(string zoneName);
+
+    /// <summary>
+    /// Check if the zone exists
+    /// </summary>
+    /// <param name="zoneName">The name of the zone</param>
+    /// <returns>True if the zone exists, False otherwise</returns>
+    bool ZoneExists(string zoneName);
 }

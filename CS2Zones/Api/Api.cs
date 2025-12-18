@@ -51,5 +51,19 @@ namespace CS2Zones
         {
             OnPlayerLeaveZone?.Invoke(player, zoneName);
         }
+
+        public Vector GetZoneMiddlePosition(string zoneName)
+        {
+            Zone? zone = ZoneManager.GetZoneByName(zoneName);
+            if (zone == null)
+                return new Vector(0, 0, 0);
+
+            return zone.GetMiddle();
+        }
+
+        public bool ZoneExists(string zoneName)
+        {
+            return ZoneManager.GetZoneByName(zoneName) != null;
+        }
     }
 }

@@ -29,5 +29,11 @@ cp -f "$SCRIPT_DIR/CS2ZonesAPI/bin/Release/net8.0/CS2ZonesAPI.dll" "$SHARED_DIR/
 cp -f "$SCRIPT_DIR/CS2ZonesAPI/bin/Release/net8.0/CS2ZonesAPI.deps.json" "$SHARED_DIR/CS2ZonesAPI/" 2>/dev/null || true
 cp -f "$SCRIPT_DIR/CS2ZonesAPI/bin/Release/net8.0/CS2ZonesAPI.pdb" "$SHARED_DIR/CS2ZonesAPI/" 2>/dev/null || true
 
+echo "📦 Creating ZIP archive..."
+ZIP_FILE="$SCRIPT_DIR/release/CS2Zones.zip"
+cd "$SCRIPT_DIR/release"
+zip -r "$ZIP_FILE" plugins/ shared/ > /dev/null 2>&1
+echo "  → Created: $ZIP_FILE"
+
 echo "✅ Build and copy completed successfully !"
 
