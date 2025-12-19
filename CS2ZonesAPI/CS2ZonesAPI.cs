@@ -43,5 +43,5 @@ public interface ICS2ZonesAPI
     /// </summary>
     /// <param name="zoneName">The name of the zone</param>
     /// <returns>True if the zone exists, False otherwise</returns>
-    bool ZoneExists(string zoneName);
+    bool IsZoneExists(string zoneName);
 }

@@ -13,7 +13,7 @@ namespace CS2Zones
         public static string PREFIX = $" {ChatColors.Green}[CS2Zones]: {ChatColors.White}";
     
         public override string ModuleName => "CS2Zones";
-        public override string ModuleVersion => "v1.1.0";
+        public override string ModuleVersion => "v1.1.1";
         public override string ModuleAuthor => "Kriax";
 
         public static PluginCapability<ICS2ZonesAPI> zonesApiCapability { get; } = new("cs2zones:api");

@@ -61,7 +61,7 @@ namespace CS2Zones
             return zone.GetMiddle();
         }
 
-        public bool ZoneExists(string zoneName)
+        public bool IsZoneExists(string zoneName)
         {
             return ZoneManager.GetZoneByName(zoneName) != null;
         }
