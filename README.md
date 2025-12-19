@@ -70,6 +70,20 @@ Requires `@css/zones` permission
 
 ### API Usage
 
+The CS2Zones API provides the following methods and events:
+
+#### Methods
+
+- **`IsPlayerInZone(CCSPlayerController? player, string zoneName)`** - Checks if a player is currently in a specific zone
+- **`TeleportPlayerInZone(CCSPlayerController player, string zoneName)`** - Teleports a player to the center of a zone
+- **`GetZoneMiddlePosition(string zoneName)`** - Returns the middle position (Vector) of a zone
+- **`IsZoneExists(string zoneName)`** - Checks if a zone with the given name exists
+
+#### Events
+
+- **`OnPlayerEnterZone`** - Triggered when a player enters a zone
+- **`OnPlayerLeaveZone`** - Triggered when a player leaves a zone
+
 More informations and usages on the CSZonesAPI.cs : https://github.com/Salvatore-Als/cs2-zones/blob/main/CS2ZonesAPI/CS2ZonesAPI.cs
 
 Here's a complete example of how to use the CS2Zones API in your own plugin:
@@ -92,6 +106,7 @@ public class MyPlugin : BasePlugin
         // Register commands that use the zones API
         AddCommand("css_zonetp", "Teleport to zone", OnTeleportCommand);
         AddCommand("css_zonecheck", "Check if in zone", OnCheckCommand);
+        AddCommand("css_zoneexists", "Check if zone exists", OnZoneExistsCommand);
     }
 
     public override void OnAllPluginsLoaded(bool hotReload)
@@ -144,6 +159,24 @@ public class MyPlugin : BasePlugin
         else
         {
             player.PrintToChat($" {ChatColors.Red}You are not in zone 'tp'");
+        }
+    }
+
+    // Example: Check if a zone exists
+    private void OnZoneExistsCommand(CCSPlayerController player, CommandInfo command)
+    {
+        if (!player.IsValid)
+            return;
+
+        bool exists = _zonesApi?.IsZoneExists("tp") ?? false;
+        if (exists)
+        {
+            Vector middle = _zonesApi?.GetZoneMiddlePosition("tp") ?? new Vector(0, 0, 0);
+            player.PrintToChat($" {ChatColors.Green}Zone 'tp' exists at position: {middle.X}, {middle.Y}, {middle.Z}");
+        }
+        else
+        {
+            player.PrintToChat($" {ChatColors.Red}Zone 'tp' does not exist");
         }
     }
 
