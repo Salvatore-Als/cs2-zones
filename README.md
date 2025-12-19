@@ -70,6 +70,8 @@ Requires `@css/zones` permission
 
 ### API Usage
 
+More informations and usages on the CSZonesAPI.cs : https://github.com/Salvatore-Als/cs2-zones/blob/main/CS2ZonesAPI/CS2ZonesAPI.cs
+
 Here's a complete example of how to use the CS2Zones API in your own plugin:
 
 ```csharp
