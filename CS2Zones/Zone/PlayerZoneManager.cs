@@ -24,13 +24,21 @@ namespace CS2Zones
             if(EditingZone == null || _player == null)
                 return;
 
-            Vector? eyeVector = _player.TraceEyesPosition();
-            if(eyeVector == null) 
-                return;
+            if(!CS2Zones.PlayerTargetPositions.TryGetValue(_player, out var eyeVector)) {
+                _player.PrintToCenter($"{CS2Zones.PREFIX} You are not looking at a valid target (1)");
+                //return;
+                CS2Zones.PlayerTargetPositions[_player] = new Vector(0, 0, 0);
+            }
 
-            if (eyeVector.X == 0 && eyeVector.Y == 0 && eyeVector.Z == 0) 
+            CS2Zones.PlayerTargetPositions[_player] = Player.TraceEyesPosition(_player);
+
+            if(eyeVector.X == 0 && eyeVector.Y == 0 && eyeVector.Z == 0) {
+                _player.PrintToCenter($"{CS2Zones.PREFIX} You are not looking at a valid target (2)");
                 return;
-        
+            }
+
+            _player.PrintToCenter($"Eye vector: {eyeVector.X}, {eyeVector.Y}, {eyeVector.Z}");
+
             EditingZone.SetupCorners(eyeVector);
             _player.PrintToCenter(EditingZone.GetInformation(_zoneSnapshot));
         }

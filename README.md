@@ -12,6 +12,12 @@ A Counter-Strike 2 plugin for creating and managing zones on maps. This plugin a
 
 Thanks for the free Server 💋
 
+## Warning
+
+There is a memory leak issue with the usage of Vectors in Counter Strike Sharp. This plugin frequently updates Beam positions (using Vectors) during zone editing, creation, and display, which can lead to significant memory leaks.
+
+Therefore, if you need to use the zone editing feature, please be careful. I plan to optimize the zone editing system very soon to address this.
+
 ## Features
 
 - Create and manage zones on maps
@@ -225,6 +231,7 @@ csgo/addons/counterstrikesharp/configs/plugins/CS2Zones/zones_{mapname}.json
 - [ ] Add menu options to increase/decrease zone length/width
 - [ ] Move detection to trigger_multiple spawn with OnTouch events (existing code is commented out) to avoid position detection in ListenerTick
 - [ ] Implement i18n (internationalization) support
+- [ ] Beam Vectors optimization
 
 ## Contributing
 

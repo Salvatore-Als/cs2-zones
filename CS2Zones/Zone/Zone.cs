@@ -75,11 +75,10 @@ namespace CS2Zones
                 if(player == null)
                     continue;
 
-                Vector? absOrigin = player.PlayerPawn.Value?.AbsOrigin;
-                if (absOrigin == null)
+                if (!CS2Zones.PlayerPositions.TryGetValue(player, out Vector position))
                     continue;
 
-                bool inZone = VectorIsInZone(absOrigin);
+                bool inZone = VectorIsInZone(position);
                 bool wasInZone = PlayersInZone.Contains(player);
 
                 if (inZone && !wasInZone)

@@ -13,7 +13,7 @@ namespace CS2Zones
         public static string PREFIX = $" {ChatColors.Green}[CS2Zones]: {ChatColors.White}";
     
         public override string ModuleName => "CS2Zones";
-        public override string ModuleVersion => "v1.1.1";
+        public override string ModuleVersion => "v1.1.2";
         public override string ModuleAuthor => "Kriax";
 
         public static PluginCapability<ICS2ZonesAPI> zonesApiCapability { get; } = new("cs2zones:api");
@@ -24,6 +24,9 @@ namespace CS2Zones
 
         public static CS2ZonesAPI? apiInstance = new CS2ZonesAPI();
         private List<nint> _triggerHandles = new List<nint>();
+        
+        public static Dictionary<CCSPlayerController, Vector> PlayerPositions { get; private set; } = new Dictionary<CCSPlayerController, Vector>();
+        public static Dictionary<CCSPlayerController, Vector> PlayerTargetPositions { get; private set; } = new Dictionary<CCSPlayerController, Vector>();
 
         public override void Load(bool hotReload)
         {
@@ -65,7 +68,8 @@ namespace CS2Zones
             _triggerHandles.Clear();
             ZoneManager.ClearZones();
             PlayerZoneManager.PlayerZoneManagers.Clear();
-            
+            PlayerPositions.Clear();
+            PlayerTargetPositions.Clear();  
             globalCtx = null;
             _menuApi = null;
         }
@@ -83,6 +87,16 @@ namespace CS2Zones
                 AddTimer(0.1f, () => {
                     LoadZones();
                 });
+
+                // Add all players to the PlayerTargetPositions dictionary
+                foreach(var player in Utilities.GetPlayers())
+                {
+                    if(player.IsValid() && player.IsAlive())
+                        PlayerTargetPositions[player] = new Vector(0, 0, 0);
+
+                    if(!PlayerTargetPositions.ContainsKey(player))
+                        PlayerTargetPositions[player] = new Vector(0, 0, 0);
+                }
             }
         }
 
@@ -102,6 +116,8 @@ namespace CS2Zones
             
             RegisterEventHandler<EventWeaponFire>(OnWeaponFire, HookMode.Pre);
             RegisterEventHandler<EventPlayerPing>(OnPlayerPing, HookMode.Pre);
+            RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull, HookMode.Pre);
+            RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect, HookMode.Pre);
         }
 
         private void RegisterListeners()
