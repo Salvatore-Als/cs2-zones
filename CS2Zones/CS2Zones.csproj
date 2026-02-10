@@ -6,16 +6,13 @@
     <Nullable>enable</Nullable>
     <RootNamespace>CS2Zones</RootNamespace>
     <AssemblyName>CS2Zones</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CounterStrikeSharp.API" Version="1.0.348" />
     <Reference Include="MenuManager">
       <HintPath>./3rdparty/MenuManagerApi.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="CS2TraceRay">
-      <HintPath>./3rdparty/CS2TraceRay.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

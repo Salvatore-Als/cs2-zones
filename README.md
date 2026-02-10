@@ -46,7 +46,7 @@ The project is organized into three main components:
 This plugin requires the following dependencies:
 
 - **[MenuManagerCS2](https://github.com/NickFox007/MenuManagerCS2)** - For in-game menu system
-- **[CS2TraceRay](https://github.com/schwarper/CS2TraceRay/tree/main/CS2TraceRay)** - For ray tracing functionality
+- **[RayTrace](https://github.com/FUNPLAY-pro-CS2/Ray-Trace)** - For ray tracing functionality
 
 **Note**: This plugin does not require a database. All zone data is stored in JSON configuration files.
 

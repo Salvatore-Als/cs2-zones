@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Utils;
 using MenuManager;
+using RayTrace;
 
 namespace CS2Zones
 {
@@ -13,7 +14,7 @@ namespace CS2Zones
         public static string PREFIX = $" {ChatColors.Green}[CS2Zones]: {ChatColors.White}";
     
         public override string ModuleName => "CS2Zones";
-        public override string ModuleVersion => "v1.1.2";
+        public override string ModuleVersion => "v1.1.3";
         public override string ModuleAuthor => "Kriax";
 
         public static PluginCapability<ICS2ZonesAPI> zonesApiCapability { get; } = new("cs2zones:api");
@@ -46,6 +47,20 @@ namespace CS2Zones
 
 		  	    								  by Kriax
 		    ");
+
+            RegisterListener<Listeners.OnMetamodAllPluginsLoaded>(() =>
+            {
+                try
+                {
+                    CRayTrace.Init();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[CS2Zones] RayTrace module not available: {ex.Message}. Trace target disabled. Unloading the plugin...");
+                    Unload(false);
+                    return;
+                }
+            });
 
             RegisterHooks();
             RegisterListeners();

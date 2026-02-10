@@ -4,10 +4,8 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
-using CS2TraceRay.Class;
-using CS2TraceRay.Enum;
-using CS2TraceRay.Struct;
 using CS2Zones;
+using RayTrace;
 
 public static class Player
 {
@@ -61,25 +59,45 @@ public static class Player
         return pawn;
     }
 
+    private static Vector GetEyePosition(CCSPlayerController player)
+    {
+        CCSPlayerPawn? playerPawn = player.PlayerPawn.Value;
+        if (playerPawn is null) 
+            return Vector.Zero;
+
+        Vector origin = playerPawn.AbsOrigin!;
+        float viewOffset = playerPawn.ViewOffset.Z;
+        return new Vector(origin.X, origin.Y, origin.Z + viewOffset);
+    }
+
     public static Vector? TraceEyesPosition(this CCSPlayerController player)
     {
-        Vector? absOrigin = player.PlayerPawn!.Value!.AbsOrigin;
-        if (absOrigin == null)
-            return null;
+        if (player == null || !player.IsValid() || player.Pawn() == null)
+            return new Vector(0, 0, 0);
 
-        Vector eyePosition = new Vector(absOrigin.X, absOrigin.Y, absOrigin.Z + player.PlayerPawn.Value.ViewOffset.Z);
+        CCSPlayerPawn pawn = player.PlayerPawn.Value;
 
-        CGameTrace? trace = player.GetGameTraceByEyePosition(TraceMask.MaskShot, Contents.NoDraw, player);
-        if(trace == null)
-            return null;
+        QAngle eyeAngles = new QAngle(pawn.EyeAngles.X, pawn.EyeAngles.Y, pawn.EyeAngles.Z);
+        Vector eyePosition =  Player.GetEyePosition(player);
 
-        Vector endPos = new Vector(trace.Value.EndPos.X, trace.Value.EndPos.Y, trace.Value.EndPos.Z);
-        
-        // Check if the vector is valid (not at the origin)
-        if (endPos.X == 0 && endPos.Y == 0 && endPos.Z == 0)
-            return null;
+        Vector forward = new Vector();
+        NativeAPI.AngleVectors(eyeAngles.Handle, forward.Handle, 0, 0);
 
-        return endPos;
+        TraceOptions traceOptions = new TraceOptions
+        {
+            InteractsExclude = 0
+        };
+
+        if (RayTrace.CRayTrace.TraceShape( eyePosition, eyeAngles, pawn, traceOptions, out TraceResult result))
+        {
+            return new Vector(
+                result.EndPosX,
+                result.EndPosY,
+                result.EndPosZ
+            );
+        }
+
+        return null;
     }
 
     public static bool IsValidEditor(this CCSPlayerController? player)
